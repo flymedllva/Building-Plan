@@ -2,6 +2,7 @@
 
     import {onMount} from "svelte";
     import {mapMode, mapFloorLevel, mapOpenSearchMenu} from '../store.js';
+    import { fade } from 'svelte/transition';
     import MapLayer from "./MapLayer.svelte";
     import MapSearch from "./MapSearch.svelte";
     import MapSearchIcon from "./MapSearchIcon.svelte";
@@ -18,7 +19,7 @@
     });
 
     async function changeMapMode() {
-        if ($mapMode === 'view_building') {
+        if ($mapMode === 'view_building' & $mapFloorLevel !== null) {
             await mapMode.updateMode('view_floor')
         } else {
             await mapMode.updateMode('view_building')
@@ -79,23 +80,25 @@
             <MapSearchIcon/>
         </svg>
     </button>
-    <nav class="space-nav {$mapMode === 'view_floor' ? '' : 'space-nav-hidden'}">
-        <button on:click={changeActiveLayerUp} class="boxbutton space-nav__button-up search__mode__buttons__icon" >
-            <svg viewBox="0 0 21 32" width="100%" height="100%">
-                <path d="M19.196 21.143q0 0.232-0.179 0.411l-0.893 0.893q-0.179 0.179-0.411 0.179t-0.411-0.179l-7.018-7.018-7.018 7.018q-0.179 0.179-0.411 0.179t-0.411-0.179l-0.893-0.893q-0.179-0.179-0.179-0.411t0.179-0.411l8.321-8.321q0.179-0.179 0.411-0.179t0.411 0.179l8.321 8.321q0.179 0.179 0.179 0.411z"></path>
-            </svg>
-        </button>
-        <button on:click={changeMapMode} class="boxbutton boxbutton-dark space-nav__button-all-levels search__mode__buttons__icon">
-            <svg class="search__mode__buttons__icon" viewBox="0 0 32 32" width="100%" height="100%">
-                <path  d="M29.143 11.071l-13.143-6.571-13.143 6.571 13.143 6.571 13.143-6.571zM16 6.681l8.781 4.39-8.781 4.39-8.781-4.39 8.781-4.39zM26.51 14.684l2.633 1.316-13.143 6.571-13.143-6.571 2.633-1.316 10.51 5.255zM26.51 19.612l2.633 1.316-13.143 6.571-13.143-6.571 2.633-1.316 10.51 5.255z"></path>
-            </svg>
-        </button>
-        <button on:click={changeActiveLayerDown} class="boxbutton space-nav__button-down search__mode__buttons__icon">
-            <svg viewBox="0 0 21 32" width="100%" height="100%">
-                <path  d="M19.196 13.143q0 0.232-0.179 0.411l-8.321 8.321q-0.179 0.179-0.411 0.179t-0.411-0.179l-8.321-8.321q-0.179-0.179-0.179-0.411t0.179-0.411l0.893-0.893q0.179-0.179 0.411-0.179t0.411 0.179l7.018 7.018 7.018-7.018q0.179-0.179 0.411-0.179t0.411 0.179l0.893 0.893q0.179 0.179 0.179 0.411z"></path>
-            </svg>
-        </button>
-    </nav>
+    {#if $mapMode === 'view_floor'}
+        <nav class="space-nav" transition:fade="{{ duration: 400 }}">
+            <button on:click={changeActiveLayerUp} class="boxbutton space-nav__button-up search__mode__buttons__icon" >
+                <svg viewBox="0 0 21 32" width="100%" height="100%">
+                    <path d="M19.196 21.143q0 0.232-0.179 0.411l-0.893 0.893q-0.179 0.179-0.411 0.179t-0.411-0.179l-7.018-7.018-7.018 7.018q-0.179 0.179-0.411 0.179t-0.411-0.179l-0.893-0.893q-0.179-0.179-0.179-0.411t0.179-0.411l8.321-8.321q0.179-0.179 0.411-0.179t0.411 0.179l8.321 8.321q0.179 0.179 0.179 0.411z"></path>
+                </svg>
+            </button>
+            <button on:click={changeMapMode} class="boxbutton boxbutton-dark space-nav__button-all-levels search__mode__buttons__icon">
+                <svg class="search__mode__buttons__icon" viewBox="0 0 32 32" width="100%" height="100%">
+                    <path  d="M29.143 11.071l-13.143-6.571-13.143 6.571 13.143 6.571 13.143-6.571zM16 6.681l8.781 4.39-8.781 4.39-8.781-4.39 8.781-4.39zM26.51 14.684l2.633 1.316-13.143 6.571-13.143-6.571 2.633-1.316 10.51 5.255zM26.51 19.612l2.633 1.316-13.143 6.571-13.143-6.571 2.633-1.316 10.51 5.255z"></path>
+                </svg>
+            </button>
+            <button on:click={changeActiveLayerDown} class="boxbutton space-nav__button-down search__mode__buttons__icon">
+                <svg viewBox="0 0 21 32" width="100%" height="100%">
+                    <path  d="M19.196 13.143q0 0.232-0.179 0.411l-8.321 8.321q-0.179 0.179-0.411 0.179t-0.411-0.179l-8.321-8.321q-0.179-0.179-0.179-0.411t0.179-0.411l0.893-0.893q0.179-0.179 0.411-0.179t0.411 0.179l7.018 7.018 7.018-7.018q0.179-0.179 0.411-0.179t0.411 0.179l0.893 0.893q0.179 0.179 0.179 0.411z"></path>
+                </svg>
+            </button>
+        </nav>
+    {/if}
 </div>
 <aside class="{$mapOpenSearchMenu ? 'spaces-list spaces-list-open' : 'spaces-list'}" id="spaces-list">
     <MapSearch layers="{layers}"/>
