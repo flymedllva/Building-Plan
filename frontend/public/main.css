@@ -1,0 +1,80 @@
+.clearfix::before,
+.clearfix::after {
+	content: '';
+	display: table;
+}
+
+.clearfix::after {
+	clear: both;
+}
+
+/* Box button */
+.boxbutton {
+	font-size: 2em;
+	display: block;
+	width: 2em;
+	height: 2em;
+	margin: 0;
+	padding: 0;
+	color: #fff;
+	border: 0;
+	background: #d7d7dc;
+}
+
+.boxbutton--dark {
+	background: #c4c4c7;
+}
+
+.boxbutton--darker {
+	background: #2c2c2f;
+}
+
+.boxbutton--alt {
+	background: #3d1975;
+}
+
+.boxbutton--disabled,
+.boxbutton--disabled:focus,
+.boxbutton--disabled:hover {
+	cursor: default;
+	pointer-events: none;
+	opacity: 0.2;
+}
+
+/* Mobile compatability */
+
+.open-search,
+.close-search {
+	display: none;
+}
+
+@media screen and (max-width: 65.625em), screen and (max-height: 40.625em) {
+	.main {
+		width: 100vw;
+	}
+	.spaces-list,
+	.search {
+		width: 100vw;
+		right: 100%;
+		left: auto;
+	}
+	.spaces-list--open,
+	.spaces-list--open .search {
+		right: 0;
+	}
+	.open-search,
+	.close-search {
+		position: absolute;
+		display: block;
+		top: 0;
+		right: 0;
+		z-index: 1000;
+	}
+	.mallnav {
+		top: 4em;
+	}
+}
+
+
+
+
