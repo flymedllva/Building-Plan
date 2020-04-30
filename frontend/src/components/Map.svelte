@@ -5,7 +5,10 @@
     import { fade } from 'svelte/transition';
     import MapLayer from "./MapLayer.svelte";
     import MapSearch from "./MapSearch.svelte";
-    import MapSearchIcon from "./MapSearchIcon.svelte";
+    import SearchIcon from "./icons/SearchIcon.svelte";
+    import ArrowUpIcon from "./icons/ArrowUpIcon.svelte";
+    import ArrowDownIcon from "./icons/ArrowDownIcon.svelte";
+    import LayersIcon from "./icons/LayersIcon.svelte";
 
     export let mapURL
 
@@ -64,7 +67,7 @@
     </header>
     <div class="space">
         <div class="background" class:background-hidden="{$mapMode === 'view_floor'}">
-            <img class="background__map" src="{data.background}" alt="background"/>
+            <img class="background-map" src="{data.background}" alt="background"/>
         </div>
         <div class="levels">
             {#each layers as layer}
@@ -77,25 +80,19 @@
     </div>
     <button on:click={changeConditionSearchMenu} class="boxbutton boxbutton-dark open-search" aria-label="Show search">
         <svg class="icon icon-search">
-            <MapSearchIcon/>
+            <SearchIcon/>
         </svg>
     </button>
     {#if $mapMode === 'view_floor'}
         <nav class="space-nav" transition:fade="{{ duration: 400 }}">
-            <button on:click={changeActiveLayerUp} class="boxbutton space-nav__button-up search__mode__buttons__icon" >
-                <svg viewBox="0 0 21 32" width="100%" height="100%">
-                    <path d="M19.196 21.143q0 0.232-0.179 0.411l-0.893 0.893q-0.179 0.179-0.411 0.179t-0.411-0.179l-7.018-7.018-7.018 7.018q-0.179 0.179-0.411 0.179t-0.411-0.179l-0.893-0.893q-0.179-0.179-0.179-0.411t0.179-0.411l8.321-8.321q0.179-0.179 0.411-0.179t0.411 0.179l8.321 8.321q0.179 0.179 0.179 0.411z"></path>
-                </svg>
+            <button on:click={changeActiveLayerUp} class="boxbutton space-nav-button-up search-mode-buttons-icon" >
+                <ArrowUpIcon/>
             </button>
-            <button on:click={changeMapMode} class="boxbutton boxbutton-dark space-nav__button-all-levels search__mode__buttons__icon">
-                <svg class="search__mode__buttons__icon" viewBox="0 0 32 32" width="100%" height="100%">
-                    <path  d="M29.143 11.071l-13.143-6.571-13.143 6.571 13.143 6.571 13.143-6.571zM16 6.681l8.781 4.39-8.781 4.39-8.781-4.39 8.781-4.39zM26.51 14.684l2.633 1.316-13.143 6.571-13.143-6.571 2.633-1.316 10.51 5.255zM26.51 19.612l2.633 1.316-13.143 6.571-13.143-6.571 2.633-1.316 10.51 5.255z"></path>
-                </svg>
+            <button on:click={changeMapMode} class="boxbutton boxbutton-dark space-nav_button-all-levels search-mode-buttons-icon">
+                <LayersIcon/>
             </button>
-            <button on:click={changeActiveLayerDown} class="boxbutton space-nav__button-down search__mode__buttons__icon">
-                <svg viewBox="0 0 21 32" width="100%" height="100%">
-                    <path  d="M19.196 13.143q0 0.232-0.179 0.411l-8.321 8.321q-0.179 0.179-0.411 0.179t-0.411-0.179l-8.321-8.321q-0.179-0.179-0.179-0.411t0.179-0.411l0.893-0.893q0.179-0.179 0.411-0.179t0.411 0.179l7.018 7.018 7.018-7.018q0.179-0.179 0.411-0.179t0.411 0.179l0.893 0.893q0.179 0.179 0.179 0.411z"></path>
-                </svg>
+            <button on:click={changeActiveLayerDown} class="boxbutton space-nav-button-down search-mode-buttons-icon">
+                <ArrowDownIcon/>
             </button>
         </nav>
     {/if}
@@ -103,17 +100,13 @@
 <aside class="{$mapOpenSearchMenu ? 'spaces-list spaces-list-open' : 'spaces-list'}" id="spaces-list">
     <MapSearch layers="{layers}"/>
     <div class="search">
-        <input class="search__input" placeholder="Search..." />
+        <input class="search-input" placeholder="Search..." />
         <button on:click={changeConditionSearchMenu} class="boxbutton boxbutton-darker close-search">
             <svg class="icon icon-cross">
-                <MapSearchIcon/>
+                <SearchIcon/>
             </svg>
         </button>
     </div>
-<!--<!-        <span class="label">->-->
-<!--<!-            <input id="sort-by-name" class="label__checkbox" type="checkbox" aria-label="Show alphabetically"/>->-->
-<!--<!-            <label class="label__text">A - Z</label>->-->
-<!--<!-        </span>->-->
 </aside>
 
 
@@ -163,7 +156,7 @@
         transform-style: preserve-3d;
     }
 
-    .background__map {
+    .background-map {
         opacity: 0.3;
         max-width: 100%;
         display: block;
@@ -236,6 +229,8 @@
         background: #fff;
     }
 
+    /* Search list (sidebar) */
+
     .search {
         position: fixed;
         z-index: 100;
@@ -244,7 +239,7 @@
         left: calc(100vw - 300px);
     }
 
-    .search__input {
+    .search-input {
         width: 100%;
         padding: 1.315em 2em;
         color: #fff;
@@ -253,17 +248,17 @@
         border-radius: 0;
     }
 
-    .search__input:focus {
+    .search-input:focus {
         outline: none;
     }
 
-    .search__mode__buttons__icon svg {
+    :global(.search-mode-buttons-icon svg) {
         height: 32px;
         width: 32px;
         fill: white;
-
     }
-    .search__mode__buttons__icon {
+
+    :global(.search-mode-buttons-icon) {
         cursor: pointer;
     }
 </style>
