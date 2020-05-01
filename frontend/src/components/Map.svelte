@@ -71,10 +71,8 @@
             <slot/>
         </div>
     </div>
-    <button on:click={changeConditionSearchMenu} class="boxbutton boxbutton-dark open-search" aria-label="Show search">
-        <svg class="icon icon-search">
-            <SearchIcon/>
-        </svg>
+    <button on:click={changeConditionSearchMenu} class="boxbutton boxbutton-darker open-search search-mode-buttons-icon">
+        <SearchIcon/>
     </button>
     {#if $mapMode === 'view_floor'}
         <nav class="space-nav" transition:fade="{{ duration: 400 }}">
