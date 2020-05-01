@@ -1,7 +1,7 @@
 <script>
 
     import {onMount} from "svelte";
-    import {mapMode, mapFloorLevel, mapOpenSearchMenu} from '../store.js';
+    import {mapMode, mapFloorLevel, mapOpenSearchMenu, mapPath} from '../store.js';
     import { fade } from 'svelte/transition';
     import MapLayer from "./MapLayer.svelte";
     import MapSearch from "./MapSearch.svelte";
@@ -35,15 +35,10 @@
     }
 
     async function checkIncrementOrDecrementLayerAdd(direction) {
-        if (direction === 'up') {
-            if ($mapFloorLevel + 1 <= layers.length) {
-                return true
-            }
-        } else if (direction === 'down') {
-            if ($mapFloorLevel - 1 > 0 ) {
-                return true
-            }
-        }
+        if (direction === 'up' && $mapFloorLevel + 1 <= layers.length)
+            return true
+        else if (direction === 'down' && $mapFloorLevel - 1 > 0)
+            return true
         return false
     }
 
@@ -85,30 +80,26 @@
     </button>
     {#if $mapMode === 'view_floor'}
         <nav class="space-nav" transition:fade="{{ duration: 400 }}">
-            <button on:click={changeActiveLayerUp} class="boxbutton space-nav-button-up search-mode-buttons-icon" >
+            <button on:click={changeActiveLayerUp} class="boxbutton search-mode-buttons-icon" >
                 <ArrowUpIcon/>
             </button>
-            <button on:click={changeMapMode} class="boxbutton boxbutton-dark space-nav_button-all-levels search-mode-buttons-icon">
+            <button on:click={changeMapMode} class="boxbutton boxbutton-dark space-nav-button-all-levels search-mode-buttons-icon">
                 <LayersIcon/>
             </button>
-            <button on:click={changeActiveLayerDown} class="boxbutton space-nav-button-down search-mode-buttons-icon">
+            <button on:click={changeActiveLayerDown} class="boxbutton search-mode-buttons-icon">
                 <ArrowDownIcon/>
             </button>
         </nav>
     {/if}
 </div>
-<aside class="{$mapOpenSearchMenu ? 'spaces-list spaces-list-open' : 'spaces-list'}" id="spaces-list">
-    <MapSearch layers="{layers}"/>
+<aside class="spaces-list" class:spaces-list-open="{$mapOpenSearchMenu}">
+    <MapSearch filteredLayers="{JSON.parse(JSON.stringify(layers)).map(i => i.markers).reduce((a, b) => Object.assign(b, a), {})}"/>
     <div class="search">
-        <input class="search-input" placeholder="Search..." />
-        <button on:click={changeConditionSearchMenu} class="boxbutton boxbutton-darker close-search">
-            <svg class="icon icon-cross">
-                <SearchIcon/>
-            </svg>
+        <button on:click={changeConditionSearchMenu} class="boxbutton boxbutton-darker close-search search-mode-buttons-icon">
+            <SearchIcon/>
         </button>
     </div>
 </aside>
-
 
 
 <style>
@@ -136,6 +127,15 @@
     }
 
     /* Levels main */
+
+    .main {
+        position: fixed;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        width: calc(100vw - 300px);
+        height: 100vh;
+    }
 
     .background,
     .levels {
@@ -183,14 +183,6 @@
     }
 
     /* Level nav */
-    .main {
-        position: fixed;
-        top: 0;
-        left: 0;
-        overflow: hidden;
-        width: calc(100vw - 300px);
-        height: 100vh;
-    }
 
     .space {
         position: relative;
@@ -206,7 +198,6 @@
         -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
         transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
     }
-
 
     .space-nav {
         position: absolute;
@@ -239,19 +230,6 @@
         left: calc(100vw - 300px);
     }
 
-    .search-input {
-        width: 100%;
-        padding: 1.315em 2em;
-        color: #fff;
-        border: 0;
-        background: #515158;
-        border-radius: 0;
-    }
-
-    .search-input:focus {
-        outline: none;
-    }
-
     :global(.search-mode-buttons-icon svg) {
         height: 32px;
         width: 32px;
@@ -261,4 +239,73 @@
     :global(.search-mode-buttons-icon) {
         cursor: pointer;
     }
+
+
+    /* Box button */
+    .boxbutton {
+        font-size: 2em;
+        display: block;
+        width: 2em;
+        height: 2em;
+        margin: 0;
+        padding: 0;
+        color: #fff;
+        border: 0;
+        background: #d7d7dc;
+    }
+
+    .boxbutton-dark {
+        background: #c4c4c7;
+    }
+
+    .boxbutton-darker {
+        background: #2c2c2f;
+    }
+
+    .boxbutton-alt {
+        background: #3d1975;
+    }
+
+    .boxbutton-disabled,
+    .boxbutton-disabled:focus,
+    .boxbutton-disabled:hover {
+        cursor: default;
+        pointer-events: none;
+        opacity: 0.2;
+    }
+
+    /* Mobile compatability */
+
+    .open-search,
+    .close-search {
+        display: none;
+    }
+
+    @media screen and (max-width: 65.625em), screen and (max-height: 40.625em) {
+        .main {
+            width: 100vw;
+        }
+        .space-nav {
+            top: 4em;
+        }
+        .spaces-list,
+        .search {
+            width: 100vw;
+            right: 100%;
+            left: auto;
+        }
+        .spaces-list-open,
+        .spaces-list-open .search {
+            right: 0;
+        }
+        .open-search,
+        .close-search {
+            position: absolute;
+            display: block;
+            top: 0;
+            right: 0;
+            z-index: 1000;
+        }
+    }
+
 </style>

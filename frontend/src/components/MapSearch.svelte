@@ -3,39 +3,16 @@
     import {mapFromPoint, mapToPoint, mapPath, mapOpenObject} from '../store.js';
     import {serverURL} from '../constants.js'
 
-    export let layers
+    export let filteredLayers = [];
+
+    let searchTerm = "";
 
     async function findPath() {
         if ($mapFromPoint && $mapToPoint) {
-            console.log($mapFromPoint);
             const res = await fetch(serverURL + '/route' + '/building_1' + '/' + $mapFromPoint.id + '/' + $mapToPoint.id);
             await mapPath.updatePaths(await res.json());
         }
     }
-    // $: filteredList = items.filter(item => item.name.indexOf(searchTerm) !== -1);
-
-    // $: filteredList = layers.filter(
-    //     i => i.markers.filter(
-    //         j => {console.log(j);return j}
-    //     )
-
-    // );
-    // $: filteredList = layers.map(i => i.markers).reduce((a, b) => Object.assign(b, a), {})
-
-    // $: filteredList = layers.map(i => i.markers).reduce((a, b) => Object.assign(b, a), {}).filter(item => console.log(item));
-
-
-
-    // Object.assign(obj, {key3: "value3"})
-
-    // function filterByLanguage(data, language) {
-    //     return data.filter(function(record) {
-    //         record.dictor.values = record.dictor.values.filter(function(item) {
-    //             return item.language === language;
-    //         });
-    //         return record.dictor.values.length;
-    //     });
-    // }
 
     async function fromHereSelectObject() {
         await mapFromPoint.updatePoint($mapOpenObject)
@@ -52,6 +29,12 @@
     async function closeSelectObject() {
         await mapOpenObject.deleteObject()
     }
+
+    $: filteredList = Object.keys(filteredLayers).reduce(function(r, e) {
+        if (!filteredLayers[e].title.toLowerCase().indexOf(searchTerm.toLowerCase()))
+            r.push(Object.assign(filteredLayers[e], {"id": e}))
+        return r;
+    }, [])
 
 </script>
 
@@ -94,6 +77,16 @@
         {/if}
         </div>
     {/if}
+
+    Поиск: <input bind:value={searchTerm} />
+    {#each filteredList as item}
+        <p>
+            {item.title}
+        </p>
+    {:else}
+        <p>Не найдено</p>
+    {/each}
+
 </div>
 
 <style>

@@ -1,6 +1,7 @@
 <script>
 
     import {mapMode, mapFloorLevel, mapPath, mapOpenObject, mapOpenSearchMenu} from '../store.js';
+    import {fade} from 'svelte/transition';
     import {flyAnimation} from '../animation'
 
     import MapText from "./MapText.svelte";
@@ -51,11 +52,11 @@
             {/if}
         {/each}
         {#each layer.routes as item}
-            {#if item.type === 'line' && $mapPath.has(item.id)}
-                <line class="line {item.id}" x1={item.x1} x2={item.x2} y1={item.y1} y2={item.y2} stroke-width="8" />
+            {#if $mapMode === 'view_floor' && item.type === 'line' && $mapPath.has(item.id)}
+                <line transition:fade="{{ delay: 0, duration: 600 }}" class="line {item.id}" x1={item.x1} x2={item.x2} y1={item.y1} y2={item.y2} stroke-width="8" />
             {/if}
         {/each}
-        {#each layer.intermediates as item}
+        {#each layer.entrances as item}
             {#if $mapMode === 'view_floor' && item.type === 'entrance'}
                 <line class="map_entrance {item.id}" x1={item.x1} y1={item.y1} x2={item.x2} y2={item.y2} stroke-width="6" />
 <!--            {:else if item.type === 'point'}-->
