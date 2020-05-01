@@ -43,15 +43,13 @@
     }
 
     async function changeActiveLayerDown() {
-        if (await checkIncrementOrDecrementLayerAdd('down')) {
+        if (await checkIncrementOrDecrementLayerAdd('down'))
             await mapFloorLevel.decrement()
-        }
     }
 
     async function changeActiveLayerUp() {
-        if (await checkIncrementOrDecrementLayerAdd('up')) {
+        if (await checkIncrementOrDecrementLayerAdd('up'))
             await mapFloorLevel.increment()
-        }
     }
 
 </script>
@@ -216,7 +214,7 @@
         right: 0;
         width: 300px;
         min-height: 100vh;
-        padding: 5em 0 1em;
+        padding: 2em 0 1em;
         background: #fff;
     }
 

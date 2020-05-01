@@ -1,5 +1,6 @@
 <script>
 
+    import {slide, fade} from 'svelte/transition';
     import {mapFromPoint, mapToPoint, mapPath, mapOpenObject} from '../store.js';
     import {serverURL} from '../constants.js'
 
@@ -36,16 +37,17 @@
         return r;
     }, [])
 
+
 </script>
 
 <div class="search_container">
     {#if $mapOpenObject}
-        <div class="search_object_box">
+        <div in:fade|local class="search_object_box">
             <div on:click={closeSelectObject} class="search_close_button"></div>
             <h1>
                 {$mapOpenObject.title}</h1>
             <span>
-                {$mapOpenObject.level + "-й этаж"}
+                {"Этаж " + $mapOpenObject.level}
             </span>
             <p>
                 {$mapOpenObject.description}
@@ -60,36 +62,67 @@
         </div>
     {:else}
         <div class="search_route_box">
-            <p class="search_route_p">Отсюда</p>
-            {#if $mapFromPoint}
-                <button class="search_select_route_button">{$mapFromPoint.title}</button>
-            {:else}
-                <button class="search_select_route_button_inactive">Выберите место на карте</button>
+            {#if $mapFromPoint || $mapToPoint}
+                <div transition:fade|local>
+                    <p class="search_route_p">Отсюда</p>
+                    {#if $mapFromPoint}
+                        <button class="search_select_route_button">{$mapFromPoint.title}</button>
+                    {:else}
+                        <button class="search_select_route_button_inactive">Выберите место</button>
+                    {/if}
+                </div>
+                <div transition:fade|local>
+                    <p class="search_route_p">Сюда</p>
+                    {#if $mapToPoint}
+                        <button class="search_select_route_button">{$mapToPoint.title}</button>
+                    {:else}
+                        <button class="search_select_route_button_inactive">Выберите место</button>
+                    {/if}
+                </div>
             {/if}
-            <p class="search_route_p">Сюда</p>
-            {#if $mapToPoint}
-                <button class="search_select_route_button">{$mapToPoint.title}</button>
-            {:else}
-                <button class="search_select_route_button_inactive">Выберите место на карте</button>
+            {#if $mapFromPoint && $mapToPoint}
+                <p>Путь займет 23 минуты</p>
             {/if}
-        {#if $mapFromPoint && $mapToPoint}
-            <p>Путь займет 23 минуты</p>
-        {/if}
+            <div in:fade|local>
+                <p class="search_route_p">Поиск</p>
+                <input class="search_button" placeholder="Магнит" bind:value={searchTerm} />
+                <ul class="filter_item">
+                    {#each filteredList as item}
+                        <li >{item.title}</li>
+                    {/each}
+                </ul>
+            </div>
         </div>
     {/if}
 
-    Поиск: <input bind:value={searchTerm} />
-    {#each filteredList as item}
-        <p>
-            {item.title}
-        </p>
-    {:else}
-        <p>Не найдено</p>
-    {/each}
+
 
 </div>
 
 <style>
+    .filter_item {
+        list-style-type: square;
+        padding-left: 20px;
+    }
+    .filter_item li {
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+    .search_button {
+        background-color: #515158;
+        border: none;
+        color: rgb(185, 185, 185);
+        padding: 15px 0;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        width: 100%;
+        outline:none;
+    }
+
     .search_container {
         margin-left: 1em;
         margin-right: 1em;
@@ -102,6 +135,8 @@
 
     .search_route_p {
         margin-bottom: 2px;
+        font-weight: 600;
+        font-size: 1.2em;
     }
 
     .search_select_button {
