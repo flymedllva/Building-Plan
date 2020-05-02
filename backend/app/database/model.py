@@ -41,7 +41,7 @@ class ArangoDB(metaclass=MetaSingleton):
             """
             FOR v, e IN OUTBOUND SHORTEST_PATH @of TO @to
               GRAPH @graph
-            RETURN { "connection":  v._key, "object": RTRIM(e._key, "___2") }
+            RETURN { "connection":  v._key, "object": REGEX_REPLACE(e._key, "___2", "") }
             """,
             bind_vars={"of": of, "to": to, "graph": graph},
         )
