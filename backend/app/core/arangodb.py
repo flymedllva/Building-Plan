@@ -71,7 +71,7 @@ async def parsing_imported_file(data: ImportData) -> BuildingSchema:
     building_data_label = f"{data.designation}_data"
 
     try:
-        graph = database.db.create_graph(data.designation)
+        graph = database.instance.create_graph(data.designation)
     except GraphCreateError:
         raise CONFLICT_GRAPH_EXCEPTION
 
@@ -82,9 +82,9 @@ async def parsing_imported_file(data: ImportData) -> BuildingSchema:
         to_vertex_collections=[building_objects_label],
     )
 
-    if database.db.has_collection(building_data_label):
-        database.db.delete_collection(building_data_label)
-    building_data = database.db.create_collection(building_data_label)
+    if database.instance.has_collection(building_data_label):
+        database.instance.delete_collection(building_data_label)
+    building_data = database.instance.create_collection(building_data_label)
 
     for layer in data.layers:
         for item in layer.objects:

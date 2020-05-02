@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends
 
 from app.core import arangodb
 from app.database import database
-from app.schemas.object import Object
 from app.schemas.building_import import ImportData
 from app.schemas.building import BuildingSchema
 

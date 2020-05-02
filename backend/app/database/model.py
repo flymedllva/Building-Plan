@@ -5,11 +5,13 @@ from arango import ArangoClient
 from arango.database import StandardDatabase, AsyncDatabase
 from arango.job import AsyncJob
 
+from app.core.helpers import MetaSingleton
 
-class ArangoDB:
+
+class ArangoDB(metaclass=MetaSingleton):
     client: ArangoClient
-    db: StandardDatabase
-    async_db: AsyncDatabase
+    instance: StandardDatabase
+    async_instance: AsyncDatabase
     tasks: dict
 
     def __init__(
@@ -26,8 +28,8 @@ class ArangoDB:
             deserializer=ujson.loads,
             host_resolver=host_resolver,
         )
-        self.db = self.client.db(database, username=username, password=password)
-        self.async_db = self.db.begin_async_execution(return_result=True)
+        self.instance = self.client.db(database, username=username, password=password)
+        self.async_instance = self.instance.begin_async_execution(return_result=True)
 
     async def receive_asynс_response(self, task: AsyncJob):
         while task.status() != "done":
@@ -35,7 +37,7 @@ class ArangoDB:
         return [i for i in task.result()]
 
     async def find_shortest_path(self, of: str, to: str, graph: str):
-        task = self.async_db.aql.execute(
+        task = self.async_instance.aql.execute(
             """
             FOR v, e IN OUTBOUND SHORTEST_PATH @of TO @to
               GRAPH @graph
