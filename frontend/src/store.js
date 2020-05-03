@@ -46,6 +46,7 @@ function mapPathCreate() {
     return {
         subscribe,
         updatePaths: async (paths) => set(new Set(paths)),
+        deletePaths: async () => set(new Set())
     };
 }
 

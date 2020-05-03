@@ -4,12 +4,6 @@ from pydantic import AnyHttpUrl
 from app.schemas.base import FastModel
 
 
-class ImportMarker(FastModel):
-    title: str
-    description: str
-    site: str
-
-
 class ImportPolygon(FastModel):
     type: str
     id: str
@@ -69,7 +63,23 @@ class ImportEntranceLine(FastModel):
     p2: str
 
 
+class ImportUpstairLine(FastModel):
+    type: str
+    id: str
+    p1: str
+    p2: str
+    time: int
+
+
+class ImportMarker(FastModel):
+    title: str
+    type: str
+    description: Union[str, None]
+    site: Union[str, None]
+
+
 class ImportLayer(FastModel):
+    id: int
     objects: List[Union[ImportRect, ImportPath, ImportPolygon]]
     entrances: List[ImportEntrance]
     points: List[ImportPoint]
@@ -82,3 +92,4 @@ class ImportData(FastModel):
     designation: str
     background: AnyHttpUrl
     layers: List[ImportLayer]
+    upstairs: List[ImportUpstairLine]

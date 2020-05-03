@@ -28,5 +28,21 @@ app.add_middleware(
 
 app.include_router(route.router, prefix=config.PROJECT_API_V1_URL)
 
+# @app.on_event("startup")
+# async def startup():
+#     await database.connect()
+#
+#
+# @app.on_event("shutdown")
+# async def shutdown():
+#     await database.disconnect()
+
+
+# @app.on_event("startup")
+# @repeat_every(seconds=60 * 60 * 24)  # 24 hours
+# async def update_information_from_ruz():
+#     await asyncio.sleep(5)
+
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

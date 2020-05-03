@@ -1,6 +1,6 @@
 from typing import List, Dict, Union
 
-from pydantic import AnyHttpUrl
+from pydantic import AnyHttpUrl, validator
 from app.schemas.base import FastModel
 
 
@@ -40,8 +40,6 @@ class BuildingEntrance(FastModel):
 class BuildingRoute(FastModel):
     type: str
     id: str
-    p1: str
-    p2: str
     x1: float
     y1: float
     x2: float
@@ -51,17 +49,17 @@ class BuildingRoute(FastModel):
 class BuildingEntranceRoute(FastModel):
     type: str
     id: str
-    p1: str
-    p2: str
 
 
 class BuildingMarker(FastModel):
     title: str
-    description: str
-    site: str
+    type: str
+    description: Union[str, None]
+    site: Union[str, None]
 
 
 class BuildingLayer(FastModel):
+    id: int
     objects: List[Union[BuildingRect, BuildingPath, BuildingPolygon]]
     entrances: List[BuildingEntrance]
     routes: List[Union[BuildingRoute, BuildingEntranceRoute]]

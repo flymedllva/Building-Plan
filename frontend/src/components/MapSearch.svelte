@@ -1,10 +1,11 @@
 <script>
 
     import {slide, fade} from 'svelte/transition';
-    import {mapFromPoint, mapToPoint, mapPath, mapOpenObject} from '../store.js';
+    import {mapFromPoint, mapToPoint, mapPath, mapOpenObject, mapOpenSearchMenu, mapFloorLevel, mapMode} from '../store.js';
     import {serverURL} from '../constants.js'
 
     export let filteredLayers = [];
+    export let layers = [];
 
     let searchTerm = "";
 
@@ -29,6 +30,25 @@
 
     async function closeSelectObject() {
         await mapOpenObject.deleteObject()
+    }
+
+    async function findSelectedObject(selectedObject) {
+        searchTerm = "";
+        layers.some(function(item) {
+            let found = false;
+            item.objects.some(function (object) {
+                if (selectedObject.id === object.marker) {
+                    found = true
+                    mapOpenObject.updateObject(Object.assign({}, selectedObject, object, {"level": item.id}));
+                    mapOpenSearchMenu.isOpen()
+                    if ($mapMode === 'view_building' || $mapMode ==='view_floor') {
+                        mapFloorLevel.updateLevel(item.id);
+                        mapMode.updateMode('view_floor');
+                    }
+                }
+            })
+            if (found) return true
+        });
     }
 
     $: filteredList = Object.keys(filteredLayers).reduce(function(r, e) {
@@ -80,15 +100,12 @@
                     {/if}
                 </div>
             {/if}
-            {#if $mapFromPoint && $mapToPoint}
-                <p>Путь займет 23 минуты</p>
-            {/if}
             <div in:fade|local>
                 <p class="search_route_p">Поиск</p>
                 <input class="search_button" placeholder="Магнит" bind:value={searchTerm} />
                 <ul class="filter_item">
                     {#each filteredList as item}
-                        <li >{item.title}</li>
+                        <li on:click={findSelectedObject(item)}>{item.title}</li>
                     {/each}
                 </ul>
             </div>

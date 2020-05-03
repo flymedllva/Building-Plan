@@ -1,8 +1,8 @@
 <script>
 
     import {onMount} from "svelte";
-    import {mapMode, mapFloorLevel, mapOpenSearchMenu, mapPath} from '../store.js';
-    import { fade } from 'svelte/transition';
+    import {mapMode, mapFloorLevel, mapOpenSearchMenu, mapPath, mapOpenObject} from '../store.js';
+    import {fade} from 'svelte/transition';
     import MapLayer from "./MapLayer.svelte";
     import MapSearch from "./MapSearch.svelte";
     import SearchIcon from "./icons/SearchIcon.svelte";
@@ -16,15 +16,28 @@
     let layers = [];
 
     onMount(async () => {
-        const res = await fetch(mapURL);
-        data = await res.json();
-        layers = data.layers;
+        await loadMapData()
     });
+
+    async function loadMapData() {
+        fetch(mapURL)
+            .then(async (res) => res.json())
+            .then(async (res) => {
+                data = res
+                layers = data.layers
+            })
+            .catch(async () => {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await loadMapData()
+            });
+    }
 
     async function changeMapMode() {
         if ($mapMode === 'view_building' & $mapFloorLevel !== null) {
             await mapMode.updateMode('view_floor')
         } else {
+            await mapPath.deletePaths();
+            await mapOpenObject.deleteObject()
             await mapMode.updateMode('view_building')
             await mapFloorLevel.updateLevel(null);
         }
@@ -43,13 +56,17 @@
     }
 
     async function changeActiveLayerDown() {
-        if (await checkIncrementOrDecrementLayerAdd('down'))
+        if (await checkIncrementOrDecrementLayerAdd('down')) {
+            await mapOpenObject.deleteObject()
             await mapFloorLevel.decrement()
+        }
     }
 
     async function changeActiveLayerUp() {
-        if (await checkIncrementOrDecrementLayerAdd('up'))
+        if (await checkIncrementOrDecrementLayerAdd('up')) {
+            await mapOpenObject.deleteObject()
             await mapFloorLevel.increment()
+        }
     }
 
 </script>
@@ -89,9 +106,11 @@
     {/if}
 </div>
 <aside class="spaces-list" class:spaces-list-open="{$mapOpenSearchMenu}">
-    <MapSearch filteredLayers="{JSON.parse(JSON.stringify(layers)).map(i => i.markers).reduce((a, b) => Object.assign(b, a), {})}"/>
+    <MapSearch layers="{layers}"
+               filteredLayers="{JSON.parse(JSON.stringify(layers)).map(i => i.markers).reduce((a, b) => Object.assign(b, a), {})}"/>
     <div class="search">
-        <button on:click={changeConditionSearchMenu} class="boxbutton boxbutton-darker close-search search-mode-buttons-icon">
+        <button on:click={changeConditionSearchMenu}
+                class="boxbutton boxbutton-darker close-search search-mode-buttons-icon">
             <SearchIcon/>
         </button>
     </div>

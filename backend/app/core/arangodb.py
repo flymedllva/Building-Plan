@@ -1,7 +1,8 @@
 from typing import Union, Tuple, Dict
 
-from arango.exceptions import GraphCreateError
-
+import ujson
+from arango.exceptions import GraphCreateError, DocumentInsertError
+from arango.collection import StandardCollection
 from app.database import database
 from app.schemas.building_import import (
     ImportData,
@@ -12,10 +13,10 @@ from app.schemas.building_import import (
     ImportPoint,
     ImportLine,
     ImportEntranceLine,
+    ImportUpstairLine,
 )
 from app.schemas.building import BuildingSchema
-
-from app.core.exceptions import CONFLICT_GRAPH_EXCEPTION
+from app.core.exceptions import CONFLICT_GRAPH_EXCEPTION, DOCUMENT_INSERT_EXCEPTION
 
 
 async def objects_to_dict_with_key(
@@ -35,7 +36,7 @@ async def objects_to_dict_with_key(
 
 
 async def connections_to_dict_with_key_from_to(
-    item: Union[ImportLine, ImportEntranceLine], building_title: str
+    item: Union[ImportLine, ImportEntranceLine, ImportUpstairLine], building_title: str
 ) -> Tuple[Dict, Dict]:
     """
     Преобразует связи в словарь с _key вместо id
@@ -60,7 +61,7 @@ async def connections_to_dict_with_key_from_to(
 
 async def parsing_imported_file(data: ImportData) -> BuildingSchema:
     """
-    Парсинг полученого файла
+    Парсинг полученого файла + загрузка в ArangoDB
 
     :param data: файл
     :return:
@@ -69,6 +70,7 @@ async def parsing_imported_file(data: ImportData) -> BuildingSchema:
     building_objects_label = f"{data.designation}_objects"
     building_connections_label = f"{data.designation}_connections"
     building_data_label = f"{data.designation}_data"
+    building_key_value_store_label = f"{data.designation}_key_value_store"
 
     try:
         graph = database.instance.create_graph(data.designation)
@@ -84,23 +86,43 @@ async def parsing_imported_file(data: ImportData) -> BuildingSchema:
 
     if database.instance.has_collection(building_data_label):
         database.instance.delete_collection(building_data_label)
-    building_data = database.instance.create_collection(building_data_label)
+    building_data: StandardCollection = database.instance.create_collection(
+        building_data_label
+    )
 
-    for layer in data.layers:
-        for item in layer.objects:
-            building_objects.insert(await objects_to_dict_with_key(item))
-        for item in layer.entrances:
-            building_objects.insert(await objects_to_dict_with_key(item))
-        for item in layer.points:
-            building_objects.insert(await objects_to_dict_with_key(item))
-        for item in layer.routes:
+    if database.instance.has_collection(building_key_value_store_label):
+        database.instance.delete_collection(building_key_value_store_label)
+    building_key_value_store: StandardCollection = database.instance.create_collection(
+        building_key_value_store_label
+    )
+
+    try:
+        for layer in data.layers:
+            for item in layer.objects:
+                building_objects.insert(await objects_to_dict_with_key(item))
+            for item in layer.entrances:
+                building_objects.insert(await objects_to_dict_with_key(item))
+            for item in layer.points:
+                building_objects.insert(await objects_to_dict_with_key(item))
+            for item in layer.routes:
+                item_1, item_2 = await connections_to_dict_with_key_from_to(
+                    item, building_objects_label
+                )
+                building_connections.insert(item_1)
+                building_connections.insert(item_2)
+
+        for item in data.upstairs:
             item_1, item_2 = await connections_to_dict_with_key_from_to(
                 item, building_objects_label
             )
             building_connections.insert(item_1)
             building_connections.insert(item_2)
+    except DocumentInsertError as e:
+        error = DOCUMENT_INSERT_EXCEPTION
+        error.detail = f"{error.detail} {e}"
+        raise error
 
     building_schema = BuildingSchema(**data.dict())
-    building_data.insert({"data": building_schema.dict()})
+    building_data.insert({"data": ujson.dumps(building_schema.dict())})
 
     return building_schema

@@ -5,6 +5,7 @@
     import {flyAnimation} from '../animation'
 
     import MapText from "./MapText.svelte";
+    import MapStairs from "./MapStairs.svelte"
 
     export let level;
     export let layer;
@@ -19,7 +20,7 @@
     async function selectObject(object) {
         if ($mapMode  === 'view_floor') {
             await mapOpenObject.updateObject(
-                    Object.assign(object, layer.markers[object.marker], {"level": level})
+                    Object.assign({}, object, layer.markers[object.marker], {"level": level})
             );
             await mapOpenSearchMenu.isOpen()
         }
@@ -27,7 +28,7 @@
 
 </script>
 
-<div on:click={selectLayer} in:flyAnimation={{ z: 1000, duration: 600, level: level }}
+<div on:click={selectLayer} in:flyAnimation={{ z: 1000, delay: 100, duration: 600, level: level }}
      class="level"
      style="{'transform: translateZ(' + (level * 10 - 10) +'vmin);'}
            {$mapMode === 'view_floor' ? $mapFloorLevel === level ? 'transform: translateZ(15vmin) rotate3d(0,0,1,20deg)'
@@ -40,8 +41,12 @@
                 <polygon points="{item.points}" class="map__ground {item.id}" />
             {:else if item.type === 'rect'}
                 <rect on:click={selectObject(item)} x={item.x} y={item.y} width={item.width} height={item.height} class="map__space {item.id}"/>
-                {#if $mapMode === 'view_floor' && item.marker}
-                    <MapText item="{item}" marker="{layer.markers[item.marker]}"/>
+                {#if $mapMode === 'view_floor' && item.marker && item.marker in layer.markers}
+                    {#if layer.markers[item.marker].type === 'stairs'}
+                        <MapStairs item="{item}" marker="{layer.markers[item.marker]}"/>
+                    {:else}
+                        <MapText item="{item}" marker="{layer.markers[item.marker]}"/>
+                    {/if}
                 {/if}
             {:else if item.type === 'ellipse'}
                 <ellipse cx={item.cx} cy={item.cy} rx={item.rx} ry={item.ry} class="map__tree {item.id}" />
@@ -59,11 +64,13 @@
         {#each layer.entrances as item}
             {#if $mapMode === 'view_floor' && item.type === 'entrance'}
                 <line class="map_entrance {item.id}" x1={item.x1} y1={item.y1} x2={item.x2} y2={item.y2} stroke-width="6" />
-<!--            {:else if item.type === 'point'}-->
-<!--                <circle class="{item.id}" cx={item.cx} cy={item.cy} r=6 fill="red"/>-->
             {/if}
         {/each}
-
+<!--        {#each layer.points as item}-->
+<!--            {#if $mapMode === 'view_floor' && item.type === 'point'}-->
+<!--                <circle class="{item.id}" cx={item.cx} cy={item.cy} r=6 fill="red"/>-->
+<!--            {/if}-->
+<!--        {/each}-->
     </svg>
 </div>
 
