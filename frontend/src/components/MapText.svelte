@@ -17,5 +17,6 @@
 <style>
     .text {
         font: bold 2em sans-serif;
+        user-select: none;
     }
 </style>

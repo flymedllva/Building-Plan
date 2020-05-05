@@ -3,6 +3,7 @@ import asyncio
 import ujson
 from arango import ArangoClient
 from arango.database import StandardDatabase, AsyncDatabase
+from arango.collection import StandardCollection
 from arango.job import AsyncJob
 
 from app.core.helpers import MetaSingleton
@@ -16,8 +17,8 @@ class ArangoDB(metaclass=MetaSingleton):
 
     def __init__(
         self,
-        hosts: str = "http://127.0.0.1:8529",
-        database: str = "test",
+        hosts: str = "http://0.0.0.0:8529",
+        database: str = "_system",
         username: str = "root",
         password: str = "passwd",
         host_resolver: str = "roundrobin",
@@ -52,3 +53,15 @@ class ArangoDB(metaclass=MetaSingleton):
             if item["object"]:
                 paths.add(item["object"])
         return paths
+
+    async def find_or_create_collection(self, label: str) -> StandardCollection:
+        """
+
+        :param label:
+        :return:
+        """
+
+        if self.instance.has_collection(label):
+            return self.instance.collection(label)
+        else:
+            return self.instance.create_collection(label)

@@ -1,0 +1,10 @@
+wheel
+fastapi
+fastapi-utils
+python-arango
+gunicorn
+uvicorn
+ujson
+pydantic
+python-multipart
+aiofiles

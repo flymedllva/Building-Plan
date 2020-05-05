@@ -16,3 +16,7 @@ CONFLICT_GRAPH_EXCEPTION = HTTPException(
 DOCUMENT_INSERT_EXCEPTION = HTTPException(
     status_code=HTTP_409_CONFLICT, detail="This document already exists."
 )
+
+DELETE_EXCEPTION = HTTPException(
+    status_code=HTTP_409_CONFLICT, detail="Collection or view not found."
+)

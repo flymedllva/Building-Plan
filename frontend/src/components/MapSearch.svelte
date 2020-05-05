@@ -62,7 +62,7 @@
 
 <div class="search_container">
     {#if $mapOpenObject}
-        <div in:fade|local class="search_object_box">
+        <div class="search_object_box">
             <div on:click={closeSelectObject} class="search_close_button"></div>
             <h1>
                 {$mapOpenObject.title}</h1>
@@ -83,7 +83,7 @@
     {:else}
         <div class="search_route_box">
             {#if $mapFromPoint || $mapToPoint}
-                <div transition:fade|local>
+                <div>
                     <p class="search_route_p">Отсюда</p>
                     {#if $mapFromPoint}
                         <button class="search_select_route_button">{$mapFromPoint.title}</button>
@@ -91,7 +91,7 @@
                         <button class="search_select_route_button_inactive">Выберите место</button>
                     {/if}
                 </div>
-                <div transition:fade|local>
+                <div>
                     <p class="search_route_p">Сюда</p>
                     {#if $mapToPoint}
                         <button class="search_select_route_button">{$mapToPoint.title}</button>
@@ -100,7 +100,7 @@
                     {/if}
                 </div>
             {/if}
-            <div in:fade|local>
+            <div>
                 <p class="search_route_p">Поиск</p>
                 <input class="search_button" placeholder="Магнит" bind:value={searchTerm} />
                 <ul class="filter_item">

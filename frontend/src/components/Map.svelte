@@ -3,6 +3,7 @@
     import {onMount} from "svelte";
     import {mapMode, mapFloorLevel, mapOpenSearchMenu, mapPath, mapOpenObject} from '../store.js';
     import {fade} from 'svelte/transition';
+    import {serverURL} from "../constants"
     import MapLayer from "./MapLayer.svelte";
     import MapSearch from "./MapSearch.svelte";
     import SearchIcon from "./icons/SearchIcon.svelte";
@@ -13,6 +14,7 @@
     export let mapURL
 
     let data = [];
+    let background = ""
     let layers = [];
 
     onMount(async () => {
@@ -25,6 +27,7 @@
             .then(async (res) => {
                 data = res
                 layers = data.layers
+                background = serverURL + '/' + data.designation + '/background'
             })
             .catch(async () => {
                 await new Promise(resolve => setTimeout(resolve, 500));
@@ -73,11 +76,13 @@
 
 <div class="main">
     <header class="map-header">
-        <h1>{data.title} / {$mapFloorLevel ? 'Этаж ' + $mapFloorLevel : 'Этаж не выбран'}</h1>
+        {#if data.title}
+            <h1 transition:fade="{{ duration: 400 }}">{data.title} / {$mapFloorLevel ? 'Этаж ' + $mapFloorLevel : 'Этаж не выбран'}</h1>
+        {/if}
     </header>
     <div class="space">
         <div class="background" class:background-hidden="{$mapMode === 'view_floor'}">
-            <img class="background-map" src="{data.background}" alt="background"/>
+            <img class="background-map" src="{background}" alt="background"/>
         </div>
         <div class="levels">
             {#each layers as layer}

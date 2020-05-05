@@ -70,7 +70,6 @@ async def parsing_imported_file(data: ImportData) -> BuildingSchema:
     building_objects_label = f"{data.designation}_objects"
     building_connections_label = f"{data.designation}_connections"
     building_data_label = f"{data.designation}_data"
-    building_key_value_store_label = f"{data.designation}_key_value_store"
 
     try:
         graph = database.instance.create_graph(data.designation)
@@ -84,16 +83,8 @@ async def parsing_imported_file(data: ImportData) -> BuildingSchema:
         to_vertex_collections=[building_objects_label],
     )
 
-    if database.instance.has_collection(building_data_label):
-        database.instance.delete_collection(building_data_label)
-    building_data: StandardCollection = database.instance.create_collection(
-        building_data_label
-    )
-
-    if database.instance.has_collection(building_key_value_store_label):
-        database.instance.delete_collection(building_key_value_store_label)
-    building_key_value_store: StandardCollection = database.instance.create_collection(
-        building_key_value_store_label
+    buildings: StandardCollection = await database.find_or_create_collection(
+        "buildings"
     )
 
     try:
@@ -123,6 +114,9 @@ async def parsing_imported_file(data: ImportData) -> BuildingSchema:
         raise error
 
     building_schema = BuildingSchema(**data.dict())
-    building_data.insert({"data": ujson.dumps(building_schema.dict())})
+    if not buildings.has(data.designation):
+        buildings.insert(
+            {"_key": data.designation, "data": ujson.dumps(building_schema.dict())}
+        )
 
     return building_schema

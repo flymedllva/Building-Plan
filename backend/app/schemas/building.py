@@ -69,5 +69,4 @@ class BuildingLayer(FastModel):
 class BuildingSchema(FastModel):
     title: str
     designation: str
-    background: AnyHttpUrl
     layers: List[BuildingLayer]

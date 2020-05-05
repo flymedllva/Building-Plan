@@ -90,6 +90,5 @@ class ImportLayer(FastModel):
 class ImportData(FastModel):
     title: str
     designation: str
-    background: AnyHttpUrl
     layers: List[ImportLayer]
     upstairs: List[ImportUpstairLine]

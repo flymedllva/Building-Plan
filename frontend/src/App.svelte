@@ -1,7 +1,8 @@
 <script>
 	import Map from "./components/Map.svelte"
+	import {serverURL} from "./constants"
 
-	let mapURL = 'http://localhost:5000/building.json'
+	let mapURL = serverURL + '/building_1'
 
 </script>
 

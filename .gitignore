@@ -218,3 +218,7 @@ lerna-debug.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Project
+backend/app/backgrounds
+docker
