@@ -12,7 +12,7 @@ services:
       project_net:
         ipv4_address: 172.27.1.1
   backend:
-    image: docker.pkg.github.com/flymedllva/buildingplan/buildingplan-backend
+    build: backend
     command: gunicorn app.main:app -w 6 -k uvicorn.workers.UvicornWorker --bind=0.0.0.0
     ports:
       - 8000:8000
@@ -23,7 +23,7 @@ services:
       project_net:
         ipv4_address: 172.27.1.2
   frontend:
-    image: docker.pkg.github.com/flymedllva/buildingplan/buildingplan-frontend
+    build: frontend
     command: npm start
     ports:
       - 80:5000
