@@ -6,6 +6,8 @@ services:
       - 8529:8529
     environment:
       - ARANGO_NO_AUTH=1
+      - DB_LINK_PORT_8529_TCP_ADDR=172.17.1.1
+      - DB_LINK_PORT_8529_TCP_PORT=8529
     volumes:
       - ./docker/arangodb:/var/lib/arangodb3
     networks:
