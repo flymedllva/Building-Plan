@@ -1,6 +1,6 @@
 # Building plan using Svelte and ArangoDB
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Docker Image CI](https://github.com/FlymeDllVa/BuildingPlan/workflows/Docker%20Image%20CI/badge.svg)](https://github.com/FlymeDllVa/BuildingPlan/actions)
+[![Docker Image CI](https://github.com/FlymeDllVa/BuildingPlan/workflows/Docker%20Image%20CI/badge.svg?branch=master)](https://github.com/FlymeDllVa/BuildingPlan/actions)
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
 <img src="./img/1.png"/>

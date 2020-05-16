@@ -190,6 +190,7 @@ yarn-error.log*
 # Dependency directories
 node_modules/
 jspm_packages/
+frontend/package-lock.json
 
 # Optional npm cache directory
 .npm
