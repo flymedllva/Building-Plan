@@ -21,6 +21,8 @@ services:
     environment:
       ARANGODB_DATABASE_NAME: "_system"
       ARANGODB_DATABASE_URL: "http://172.27.1.1:8529"
+    volumes:
+      - ./docker/backend/backgrounds:/app/backgrounds
     networks:
       project_net:
         ipv4_address: 172.27.1.2
